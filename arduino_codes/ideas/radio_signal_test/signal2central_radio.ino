@@ -38,6 +38,7 @@ void loop(){
 		network.read(header, &val, sizeof(val));
 	}
 	//execute signal comands based on receive value
+	set_all_leds_low(isLedOn);
 	switch(val){
 		case 'r':
 		  if( isLedOn){
