@@ -4,19 +4,39 @@ int redPin = 10;
 int yellowPin = 9;
 int greenPin = 8;
 
+
+#include <RF24Network.h>
+#include <RF24Network_config.h>
+#include <Sync.h>
+#include <nRF24L01.h>
+#include <printf.h>
+#include <RF24.h>
+#include <RF24_config.h>
+#include <SPI.h>
+
+
 boolean isLedOn = false;
 //
-char val = ;
+char val;
+const uint16_t node_signal = 02; 
+
 
 void setup(){
-  pinMode(redPin, OUTPUT);
-  pinMode(yellowPin, OUTPUT);
-  pinMode(greenPin, OUTPUT);
+	SPI.begin();
+	radio.begin();
+	network.begin(90, this_node);
+	pinMode(redPin, OUTPUT);
+	pinMode(yellowPin, OUTPUT);
+	pinMode(greenPin, OUTPUT);
 }
 
 void loop(){
 	//receive radio
-	
+	network.update();
+	while(network.available()){
+		RF24NetworkHeader header;
+		network.read(header, &val, sizeof(val));
+	}
 	//execute signal comands based on receive value
 	switch(val){
 		case 'r':

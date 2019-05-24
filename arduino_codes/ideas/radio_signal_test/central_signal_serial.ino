@@ -28,6 +28,8 @@ void loop() {
     val = Serial.read();
   }
   network.update();
+  RF24NetworkHeader header_signal(node_signal);
+  network.write(header_signal, &val, sizeof(val));
   delay(10);
 }
 
