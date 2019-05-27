@@ -11,3 +11,9 @@ https://howtomechatronics.com/tutorials/arduino/how-to-build-an-arduino-wireless
 Processing--Arduino
 https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
 https://forum.arduino.cc/index.php?topic=396450.0
+
+Documenatation source links
+https://hu.wikipedia.org/wiki/Vas%C3%BAt#A_vas%C3%BAti_j%C3%A1rm%C5%B1vek
+https://hu.wikipedia.org/wiki/Vas%C3%BAti_biztos%C3%ADt%C3%B3berendez%C3%A9s
+https://hu.wikipedia.org/wiki/F%C3%A9nyjelz%C5%91k
+https://hu.wikipedia.org/wiki/Kit%C3%A9r%C5%91
