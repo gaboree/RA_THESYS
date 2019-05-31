@@ -1,0 +1,76 @@
+BOLD: 
+\textbf{text}
+
+UNDERLINE:
+\underline{text}
+
+ITALIC:
+\textit{text}
+
+REF:
+\ref{text}
+\ref{fig:text}
+
+FIRST LETTER BIGGER:
+{\huge H}ello {\huge W}orld.
+
+PARAGRAPH:
+\paragraph 
+
+ORDERED LIST:
+\begin{enumerate}
+	\item One
+	\item Two
+	\item Three
+\end{enumerate}
+
+UNORDERED LIST:
+\begin{itemize}
+	\item One
+	\item Two
+	\item Three
+\end{itemize}
+
+NESTED LIST:
+
+\begin{enumerate}
+	\item One
+    \begin{enumerate}
+    	\item Two
+        \item Three
+        \item Four
+    \end{enumerate}
+    \item Five
+    \item Six
+\end{enumerate}
+
+BULLETS AND NUMBERING:
+
+%From bullet to dash
+\item[--] or \item[$-$]
+
+% From bullet to asterisk
+\item[$\ast$]
+
+%Use any math character
+\item[$\CHARACTER$]
+
+\begin{itemize}
+	\item[--] Dash
+    \item[$-$] Dash
+    \item[$\ast$] Asterisk
+\end{itemize}
+
+SIMPLE TABLE:
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{|c|c|}\hline
+        THR/óra és fügvény & S.I.L. szint \\ \hline
+        $10^{-9} \leq THR < 10^{-8}$ & 4 \\ \hline
+        $10^{-8} \leq THR < 10^{-7}$ & 3  \\ \hline
+        $10^{-7} \leq THR < 10^{-6}$ & 2 \\ \hline
+        $10^{-6} \leq THR < 10^{-5}$ & 1 \\ \hline
+    \end{tabular}
+    \caption[S.I.L szintek]{THR gyakoriság és a hozzá rendelt S.I.L szintek}
+    \label{sil_levels}
+\end{table}
