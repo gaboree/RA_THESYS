@@ -6,7 +6,7 @@ Network
 https://howtomechatronics.com/tutorials/arduino/arduino-wireless-communication-nrf24l01-tutorial/
 https://electronicshobbyists.com/nrf24l01-interfacing-with-arduino-wireless-communication/
 https://howtomechatronics.com/tutorials/arduino/how-to-build-an-arduino-wireless-network-with-multiple-nrf24l01-modules/
-
+https://www.arduino.cc/en/Tutorial/ShiftOut
 
 Processing--Arduino
 https://learn.sparkfun.com/tutorials/connecting-arduino-to-processing/all
