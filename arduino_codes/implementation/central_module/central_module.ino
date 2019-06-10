@@ -19,20 +19,14 @@
 #include <RF24_config.h>
 #include <SPI.h>
 
-//define  macros for communication protocol
-#define SIGNAL $
-#define VACANCY #
-#define TRAIN %
-#define DELIMITER
-
 // initialize radio network values
-int network_size = 10;
+int data_size = 8;
 RF24 radio(10,9);                   // NRF24L01 (CE,CSN)
 RF24Network network(radio);         // include this module in the network
 const uint16_t this_node = 00;      // master node adress
-const uint16_t node_train = 01;     // train control module adress
+const uint16_t node_vacancy = 01;     // vacancy control module adress
 const uint16_t node_signal = 02;    // signal netwrok control adress
-const uint16_t node_vacancy = 03;   // vacancy network control adress
+const uint16_t node_train = 03;   // train network control adress
 
 /*  Signal data initialization
  *  The message contains infromation about the 8 signals and their aspects
@@ -53,7 +47,7 @@ const uint16_t node_vacancy = 03;   // vacancy network control adress
  *            signal 7 has aspect GREEN
  *            signal 8 has aspect RED
  */
-char central_signal[network_size] = "<DDDDDDDD>";
+char central_signal[data_size] = "DDDDDDDD";
 
 /*  Vacancy data initialization
  *  The message contains infromation about the 8 vacancy elements and their state
@@ -73,7 +67,7 @@ char central_signal[network_size] = "<DDDDDDDD>";
  *            track 7 is FREE
  *            track 8 is FREE
  */
-char central_vacancy[network_size] = "<FFFFFFFF>";
+char central_vacancy[data_size] = "FFFFFFFF";
 
 /* Train data initialization
  * The messeage contains data about the trains present in the network and their speed aspect
@@ -84,23 +78,21 @@ char central_vacancy[network_size] = "<FFFFFFFF>";
  *                   H - HALF (train on track and moves with half speed)
  *                   M - MAX (train on track and moves with max speed)
  */   
-char central_train[]= "NN";
+char central_train[1]= "N";
 
 void setup() {
 	//initialize radio frequency network to communicate between modules
 	SPI.begin();
 	radio.begin();
 	network.begin(90, this_node);
-	radio.setDataRate(RF24_2MBPS);
-	//send in network initial values
-	
+	radio.setDataRate(RF24_2MBPS);	
 	//setup Serial Port communication with UI on the control PC, once in loop it is guaranteed that Serial connection is set up, this way no connection is done 
 	Serial.begin(9600);
 	handShakeWithPC();
 }
 
 void loop() {
-  // connect to radio communication network
+  // connect to RTF network
   network.update();
   
   //receive data from network
@@ -108,38 +100,27 @@ void loop() {
     RF24NetworkHeader master_header;
     char receivedData[8];
     network.read( master_header, &receivedData, sizeof(receivedData));
-    // receiving from train module
-    if (master_header.from_node == 01){
-      process_train_data(receivedData);
-    }
-    //receiving from signal module
-    if (master_header.from_node == 02){
-      process_signal_data(receivedData);
-    }
     //receiving from vacancy module
-    if (master_header.from_node == 03){
+    if (master_header.from_node == node_vacancy){
       process_vacancy_data(receivedData);
     }
   }
   
   //handle interlocking based on received data
   interlocking(central_train, central_signal, central_vacancy);
-  
+  // send new data to network
+  send_signal_data();
+  send_train_data();
   //update ui about changes
   update_data_to_ui(central_train,'t');
   update_data_to_ui(central_signal,'s');
   update_data_to_ui(central_train,'v');
-  
-  // send new data to network
-  send_signal_data();
-  send_vacancy_data();
-  send_train_data();
 }
 
 // establish handshake contact with UI platform
 void handShakeWithPC(){
 	while(Serial.available() <= 0){
-		Serial.println("Central module here.");
+		Serial.println("ACC here.");
 		delay(300);
 	}
 }
@@ -178,6 +159,7 @@ void update_data_to_ui(char* data, char type){
       Serial.print("vacancy" + data[i]);
     }    
   }
+  Serial.println("END");
 }
 
 //interlocking caluclations based on received data
