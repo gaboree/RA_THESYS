@@ -23,21 +23,21 @@
 int data_size = 8;
 RF24 radio(10,9);                   // NRF24L01 (CE,CSN)
 RF24Network network(radio);         // include this module in the network
-const uint16_t this_node = 00;      // master node adress
+const uint16_t node_acc = 00;      // master node adress
 const uint16_t node_vacancy = 01;     // vacancy control module adress
 const uint16_t node_signal = 02;    // signal netwrok control adress
-const uint16_t node_train = 03;   // train network control adress
+const uint16_t node_train_1 = 03;   // train network control adress
+const uint16_t node_train_2 = 04;
 
 /*  Signal data initialization
- *  The message contains infromation about the 8 signals and their aspects
- *  "<" character marks the begining of the message
- *  ">" character marks the end of the message
- *  The 16 characters between represent in units of two a signal number and letter representing the signals aspect
+ *  The message contains infromation about the 8 signals and their aspectsa
+ *  The 8 characters between represent in units of one a signal and a letter representing the signals aspect
+ *	The numeric identifier of a specific signal is represented by the index of the array
  *  Possible aspects: R - RED (also default value)
  *                    Y - YELLOW
  *                    G - GREEN
  *  Number of signals go from 1 to 8.
- *  Example: <1R2R3Y4G5R6Y7G8R>
+ *  Example: RRYGRYGR
  *            signal 1 has aspect RED
  *            signal 2 has aspect RED
  *            signal 3 has aspect YELLOW
@@ -51,27 +51,26 @@ char central_signal[data_size] = "DDDDDDDD";
 
 /*  Vacancy data initialization
  *  The message contains infromation about the 8 vacancy elements and their state
- *  "*" character marks the begining of the message
- *  "#" character marks the end of the message
- *  The 16 characters between represent in units of two a track number and a letter representing the state
+ *  The 8 characters represent in units of one a track/block and a letter representing the state
+ *	The numeric identifier of a specific block is represented by the index of the array
  *  Possible states: F - FREE (also default value)
  *                   O - OCCUPIED
- *  Number of tracks go from 1 to 8.
- *  Example: *1F2F3O4F5F6O7F8F#
- *            track 1 is FREE
- *            track 2 is FREE
- *            track 3 is OCCUPIED
- *            track 4 is FREE
- *            track 5 is FREE
- *            track 6 is OCCUPIED
- *            track 7 is FREE
- *            track 8 is FREE
+ *  Number of blocks go from 1 to 8.
+ *  Example: FFOFFOFF
+ *            block 1 is FREE
+ *            block 2 is FREE
+ *            block 3 is OCCUPIED
+ *            block 4 is FREE
+ *            block 5 is FREE
+ *            block 6 is OCCUPIED
+ *            block 7 is FREE
+ *            block 8 is FREE
  */
 char central_vacancy[data_size] = "FFFFFFFF";
 
 /* Train data initialization
  * The messeage contains data about the trains present in the network and their speed aspect
- * The 4 characters between represent in units of two a track number and a letter representing train state and speed
+ * The character represents the train state and speed
  * Based on layout design at most 2 trains can be present in the rail network at a time
  * Possible states:  N - NOT (also default, means train is not on track)
  *                   S - STOP (train on track and stopped)
