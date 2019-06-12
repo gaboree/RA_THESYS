@@ -87,7 +87,7 @@ void setup() {
 	radio.setDataRate(RF24_2MBPS);	
 	//setup Serial Port communication with UI on the control PC, once in loop it is guaranteed that Serial connection is set up, this way no connection is done 
 	Serial.begin(9600);
-	handShakeWithPC();
+	connectToUi();
 }
 
 void loop() {
@@ -117,7 +117,7 @@ void loop() {
 }
 
 // establish handshake contact with UI platform
-void handShakeWithPC(){
+void connectToUi(){
 	while(Serial.available() <= 0){
 		Serial.println("ACC here.");
 		delay(300);

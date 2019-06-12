@@ -1,6 +1,8 @@
 
 import controlP5.*;
+import processing.serial.*;
 
+//CP5 object for buttons
 ControlP5 cp5;
 
 //dinamic window and size parameters
@@ -17,7 +19,12 @@ PImage signal_def, signal_grn, signal_red, signal_ylw;
 String signal_aspects = "GYRGYRGG";
 ArrayList<PVector> signal_positions = new ArrayList<PVector>();
 
+//serial communication with ACC
+Serial comPort;
+char [] received_data_from_acc = null;
+boolean connected_to_acc = false;
 
+//Font for text
 PFont pfont = new PFont();
 
 
@@ -49,11 +56,13 @@ void setup() {
 
   smooth();
   strokeWeight(4);
+  //
   cp5 = new ControlP5(this);
   load_default_platform();
   add_train_control_buttons();
-  
-  
+  //Serial communication start, and read until ACC sends newline
+  comPort = new Serial(this, Serial.list()[0],9600);
+  comPort.bufferUntil('\n');  
 }
 
 
@@ -77,6 +86,24 @@ void draw() {
 /*
 * Implementation of functions
  */
+ 
+void serialEvent(){
+  String readString = comPort.readStringUntil('\n');
+  if (readString != null){
+   readString = trim(readString);
+   println(readString);
+   //handshake with ACC
+   if(connected_to_acc == false){
+    if(readString.equals("")){
+      
+    }
+   }
+  }
+ 
+}
+ 
+ 
+ 
 void draw_network(int blocks) {
   pushMatrix();
   translate(displayWidth/2, displayHeight/2); 
