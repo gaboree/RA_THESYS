@@ -17,9 +17,8 @@ PImage signal_def, signal_grn, signal_red, signal_ylw;
 String signal_aspects = "GYRGYRGG";
 ArrayList<PVector> signal_positions = new ArrayList<PVector>();
 
-//train control components
-Knob speedControlT1;
-Knob speedControlT2;
+
+PFont pfont = new PFont();
 
 
 //setting function
@@ -33,12 +32,13 @@ void setup() {
   background(155);
   noStroke();
   //dinamic size of dimensions
-  start_x = displayWidth/3.65;
-  start_y = displayWidth/18;
+  start_x = displayWidth*0.273;
+  start_y = displayWidth*0.0555;
   rn_ui_h = displayHeight*0.8;
   rn_ui_w = rn_ui_h;
   tn_ui_w = rn_ui_w/2;
   network_size = displayWidth *0.38;
+  pfont = createFont("Calibri Bold", 32);
   //preload signal aspects
   signal_def=loadImage("signal_default.jpg");
   signal_grn=loadImage("signal_green.jpg");
@@ -46,58 +46,31 @@ void setup() {
   signal_ylw=loadImage("signal_yellow.jpg");
   //setup signal coodinates
   load_signal_positions();
+
   smooth();
   strokeWeight(4);
   cp5 = new ControlP5(this);
+  load_default_platform();
+  add_train_control_buttons();
+  
+  
 }
+
+
+
+
 
 //repeating function
 void draw() {
-
-
-  // RN-UI space
-  fill(20, 95, 200);
-  rect(start_x, start_y, rn_ui_w, rn_ui_h);
-
   //draw the track network with 8 blocks and state
   draw_network(num_blocks);
   //static text for tracks
   set_track_text();
-
-  //set signals
+  //set signals with aspect
   set_signal_aspect();
   //static text for signals
   set_signal_text();
-  fill(180);
-  stroke(80);
-
-  // TN-UI-1 space
-  rect(start_x*0.1, start_y, displayWidth*0.24, displayHeight*0.5);  
-  fill(0);
-  textSize(32);
-  text("TRAIN 1", start_x*0.4, start_y*1.3);
-  cp5.addButton("T1MED")
-    .setValue(100)
-    .setPosition(100, 120)
-    .setSize(200, 19)
-    ;
-  cp5.addButton("T1MAX")
-    .setValue(100)
-    .setPosition(100, 120)
-    .setSize(200, 19)
-    ;
-  cp5.addButton("T1STOP")
-    .setValue(100)
-    .setPosition(100, 120)
-    .setSize(200, 19)
-    ;
-  //TN-UI-2 space
-  fill(180);
-  stroke(80);
-  rect(start_x*2.665, start_y, displayWidth*0.24, displayHeight*0.5);
-  fill(0);
-  textSize(32);
-  text("TRAIN 2", start_x*2.95, start_y*1.3);
+  //set_train_status_text();
 }
 
 
@@ -208,6 +181,103 @@ void set_signal_text() {
   text("SIG8", network_size*1.63, network_size*0.54);
 }
 
-void knob(int theValue) {
-  println("a knob event. setting background to "+theValue);
+
+void load_default_platform(){
+  // RN-UI space
+  fill(20, 95, 200);
+  rect(start_x, start_y, rn_ui_w, rn_ui_h);  
+  fill(180);
+  stroke(80);
+  // TN-UI-1 space
+  rect(start_x*0.1, start_y, displayWidth*0.24, displayHeight*0.5); 
+  fill(0);
+  textSize(32);
+  text("TRAIN 1", start_x*0.4, start_y*1.6);
+  //TN-UI-2 space
+  fill(180);
+  stroke(80);
+  rect(start_x*2.665, start_y, displayWidth*0.24, displayHeight*0.5);
+  fill(0);
+  textSize(32);
+  text("TRAIN 2", start_x*2.95, start_y*1.6);
+}
+/*
+void set_train_status_text(){
+  smooth();
+  fill(0);
+  textSize(32);
+  textFont(pfont);
+  boolean first = true;
+  int temp = 0;
+  for (int i = 0; i < track_states.length(); i++){
+    if(track_states.charAt(i) == 'O' && first){
+      temp = i +1;
+      text("TRAIN 1 is in Block "+temp, start_x*0.3, start_y*5.9);
+      first = false; 
+    }
+  }
+}
+*/
+
+void add_train_control_buttons(){
+  RadioButton r1,r2;
+  r1 = cp5.addRadioButton("trainControl1")
+      .setPosition(start_x*0.26,start_y*2)
+      .setItemWidth(Math.round(displayWidth*0.08))
+      .setItemHeight(Math.round(displayHeight*0.1))
+      .addItem("    V1 Max", 0)
+      .addItem("    V1 MED", 1)
+      .addItem("    T1 STOP", 2)
+      .setColorLabel(color(0))
+      .setColorForeground(color(120))
+      .setColorActive(color(255,165,0))
+      .setColorLabel(color(255))
+      .activate(2);
+  r2 = cp5.addRadioButton("trainControl2")
+      .setPosition(start_x*2.81,start_y*2)
+      .setItemWidth(Math.round(displayWidth*0.08))
+      .setItemHeight(Math.round(displayHeight*0.1))
+      .addItem("    V2 Max", 0)
+      .addItem("    V2 MED", 1)
+      .addItem("    T2 STOP", 2)
+      .setColorLabel(color(0))
+      .setColorForeground(color(120))
+      .setColorActive(color(255,165,0))
+      .setColorLabel(color(255))
+      .activate(2);
+
+    for(Toggle t:r1.getItems()) {
+         t.getCaptionLabel().setColorBackground(color(80));
+         t.getCaptionLabel().getStyle().setMarginTop(-38);
+         t.getCaptionLabel().getStyle().backgroundWidth = 170;
+         t.getCaptionLabel().getStyle().backgroundHeight = 108;
+         t.getCaptionLabel().setFont(pfont);
+     }
+    for(Toggle t:r2.getItems()) {
+         t.getCaptionLabel().setColorBackground(color(80));
+         t.getCaptionLabel().getStyle().setMarginTop(-38);
+         t.getCaptionLabel().getStyle().backgroundWidth = 170;
+         t.getCaptionLabel().getStyle().backgroundHeight = 108;
+         t.getCaptionLabel().setFont(pfont);
+     }
+}
+
+
+
+public void trainControl1(int val){
+    switch(val) {
+    case(0):println("T1 MAX");break;
+    case(1):println("T1 MED");break;
+    case(2):println("T1 STOP");break;
+
+  }
+}
+
+public void trainControl2(int val){
+    switch(val) {
+    case(0):println("T2 MAX");break;
+    case(1):println("T2 MED");break;
+    case(2):println("T2 STOP");break;
+
+  }
 }
