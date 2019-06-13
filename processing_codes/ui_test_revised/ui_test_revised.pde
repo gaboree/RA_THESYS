@@ -67,7 +67,7 @@ void setup() {
   cp5 = new ControlP5(this);
   add_train_control_buttons();
 
-  comPort = new Serial(this, Serial.list()[0], 9600);
+  comPort = new Serial(this, Serial.list()[1], 9600);
   comPort.bufferUntil('\n');
 }
 
@@ -348,14 +348,17 @@ public void trainControl1(int val) {
     case(0):
     println("T1 MAX");
     train_1_state = 'M';
+    comPort.write('M');
     break;
     case(1):
     println("T1 MED");
     train_1_state = 'H';
+    comPort.write('H');
     break;
     case(2):
     println("T1 STOP");
     train_1_state = 'S';
+    comPort.write('S');
     break;
   }
   comPort.write(train_1_state+train_2_state);

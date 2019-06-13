@@ -80,40 +80,49 @@ char central_vacancy[data_size] = "XXXXXXXX";
                      H - HALF (train on track and moves with half speed)
                      M - MAX (train on track and moves with max speed)
 */
-char central_train[train_num] = "NN";
+char central_train[train_num] = "MN";
 
 void setup() {
   //initialize radio frequency network to communicate between modules
-  //SPI.begin();
-  //radio.begin();
-  //network.begin(90, node_acc);
-  //radio.setDataRate(RF24_2MBPS);
+  SPI.begin();
+  radio.begin();
+  network.begin(90, node_acc);
+  radio.setDataRate(RF24_2MBPS);
   //setup Serial Port communication with UI on the control PC, once in loop it is guaranteed that Serial connection is set up, this way no connection is done
   Serial.begin(9600);
 }
 
 void loop() {
-  /*
-    // connect to RTF network
-    network.update();
 
+  // connect to RTF network
+  network.update();
+  /*
     //receive data from network
-    while(network.available()){
+    while (network.available()) {
     RF24NetworkHeader master_header;
     char receivedData[8];
     network.read( master_header, &receivedData, sizeof(receivedData));
     //receiving from vacancy module
-    if (master_header.from_node == node_vacancy){
+    if (master_header.from_node == node_vacancy) {
       process_vacancy_data(receivedData);
     }
     }
   */
+
   //handle interlocking based on received data
   //interlocking(central_train, central_signal, central_vacancy);
   // send new data to network
   update_data_to_ui();
   //send_signal_data();
-  //send_train_data();
+  String speed_serial = "";
+  if (Serial.available() > 0) {
+    while (Serial.available() > 0) {
+      speed_serial = speed_serial + char( Serial.read());
+    }
+    central_train[0] = speed_serial.charAt(0);
+    central_train[1] = speed_serial.charAt(1);
+  }
+  send_train_data();
   //update ui about changes
   //update_data_to_ui();
   //update_data_to_ui(central_signal,'s');
@@ -169,4 +178,8 @@ void send_signal_data() {}
 void send_vacancy_data() {}
 
 //send received data from UI to control train module
-void send_train_data() {}
+void send_train_data() {
+  char speed_t1 = central_train[0];
+  RF24NetworkHeader headert1(node_train_1);
+  bool ok_t1 = network.write(headert1, &speed_t1, sizeof(speed_t1));
+}
