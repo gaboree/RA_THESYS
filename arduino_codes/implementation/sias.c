@@ -1,7 +1,9 @@
 /* 	Algorithm to process Signal Aspect Sequencing, based on a 8 block layout, with one or two train modules present
-	The input is two char arrays
-	signal_network_states = FOFFFOFF
-	vacancy_network_states = RYGDRYGD 
+	The inputs are two char arrays
+	vacancy_network_states = FOFFFOFF (incomming vacancy state)
+	signal_network_states = RYGRRYGR ( previous signal state, it doesn't matter it is overwritten)
+	Gives output new signal aspects
+	signal_network_states = YRGRYRGR
  */
 #include <bits/stdc++.h> 
 using namespace std; 
@@ -11,24 +13,22 @@ using namespace std;
 void sias(char vac[], char sig[],int a_size, int t){
     int end = 0;
     for ( int i = 0; i < a_size; i++){
-        
         if ( i-1 < 0)
-            end = (i-1)%a_size + n;
-        
+            end = (i-1)%a_size + a_size;
         if(	(vac[i%a_size] == 'O' && vac[(i+1)%a_size] =='F' && vac[(i+2)%a_size] == 'F' && vac[(i+3)%a_size] == 'O'  )||
-			(vac[i%a_size] == 'O' && vac[(i+1)%a_size] =='F' && vac[(i+2)%a_size] == 'F' && vac[(i+3)%a_size] == 'F' && vac[(i+3)%a_size] == 'O')){
-				sig[i%a_size] = 'R';
-				sig[(i+1)%a_size] = 'G';
-				if ( i-1 < 0){
-					sig[end]='Y';
-				}else{
-					sig[(i-1)%a_size]='Y';
-				}
-				//issue SPEED_MAX command
+			(vac[i%a_size] == 'O' && vac[(i+1)%a_size] =='F' && vac[(i+2)%a_size] == 'F' && vac[(i+3)%a_size] == 'F' && vac[(i+4)%a_size] == 'O')){
+            sig[i%a_size] = 'R';
+            sig[(i+1)%a_size] = 'G';
+            if ( i-1 < 0){
+                sig[end]='Y';
+            }else{
+                sig[(i-1)%a_size]='Y';
+            }
+            //cout<<"OFFO OFFFO"<<"\n";
+            //issue SPEED_MAX command
         }
-        
         if(vac[i%a_size] == 'O' && vac[(i+1)%a_size] =='F' && vac[(i+2)%a_size] == 'O' ){
-            sigb[i%a_size] = 'R';
+            sig[i%a_size] = 'R';
             sig[(i+1)%a_size] = 'Y';
             sig[(i+2)%a_size] = 'R';
             sig[(i+3)%a_size] = 'G';
@@ -38,8 +38,8 @@ void sias(char vac[], char sig[],int a_size, int t){
                 sig[(i-1)%a_size]='Y';
             }
             //issue SPEED_MIN command
+            //cout<<"OFO"<<"\n";
         }
-        
         if(vac[i%a_size] == 'O' && vac[(i+1)%a_size] =='O' ){
             sig[i%a_size] = 'R';
             sig[(i+1)%a_size] = 'R';
@@ -50,9 +50,10 @@ void sias(char vac[], char sig[],int a_size, int t){
                 sig[(i-1)%a_size]='Y';
             }
             //issue STOP command
+            //cout<<"OO"<<"\n";
         }
-        
-        if(t == 1 && vac[i%a_size] == 'O'){
+        if((t ==1 && vac[i%a_size] == 'O')||
+        (vac[i%a_size] == 'O' && vac[(i+1)%a_size] =='F' && vac[(i+2)%a_size] == 'F' && vac[(i+3)%a_size] == 'F' && vac[(i+4)%a_size] == 'F' && vac[(i+5)%a_size] == 'O')){
             sig[i%a_size] = 'R';
             sig[(i+1)%a_size] = 'G';
             if ( i-1 < 0){
@@ -62,12 +63,17 @@ void sias(char vac[], char sig[],int a_size, int t){
             }
 			// issue SPEED_MAX command
         }
-
-    }    
-    
-    for (int i = 0; i < n; i++){
+    }
+    for (int i = 0; i < a_size; i++){
         cout << sig[i] << " ";
     }
+}
+
+void sias_remove_d(char sig[], , int n){
+	for (int i = 0; i < n; i++){
+		if(sig[i] == 'D')
+			sig[i] = 'R';
+	}
 }
 
 int count_train(char vac[], int vac_size){
@@ -81,16 +87,15 @@ int count_train(char vac[], int vac_size){
 
 // exmple to demonstrate the algorithm
 int main() { 
-    char vacancy[] = { 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F' };
-    char signal[] = { 'D', 'D', 'D', 'D', 'D', 'D', 'D' , 'D' };
-    int array_size = sizeof(signal) / sizeof(signal[0]);
+    char vacancy[] = "FFOOFFFF";
+    char signal[] =  "DDDDDDDD";
+    int array_size = sizeof(signal)-1;
     int train = count_train(vacancy,array_size);
-    cout<< train << "\n";
-    cout << n << "\n";
-    for (int i = 0; i < n; i++){
-        cout << signal[i] << " ";
+    for (int i = 0; i < array_size; i++){
+        cout << vacancy[i] << " ";
     }
-    cout << train << "\n";
+    cout<<"\n";
     sias(vacancy, signal, array_size, train);
-    return 0;
+    sias_remove_d(signal, array_size);
+	return 0;
 }
