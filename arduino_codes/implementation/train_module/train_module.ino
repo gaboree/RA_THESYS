@@ -12,9 +12,7 @@
 
 #include <RF24Network.h>
 #include <RF24Network_config.h>
-#include <Sync.h>
 #include <nRF24L01.h>
-#include <printf.h>
 #include <RF24.h>
 #include <RF24_config.h>
 #include <SPI.h>
@@ -77,11 +75,11 @@ int control_train_speed(char data[]) {
     ack = 1;
   }
   if ( data[0] == 'H' ) {
-    analogWrite(controlPWMPin, 150);
+    analogWrite(controlPWMPin, 115);
     ack = 1;
   }
   if ( data[0] == 'M' ) {
-    analogWrite(controlPWMPin, 200);
+    analogWrite(controlPWMPin, 205);
     ack = 1;
   }
   return ack;
