@@ -115,9 +115,9 @@ void updateShiftRegisters(){
 	shiftOut(s1_data, s1_clock, MSBFIRST, aspects_sr_1);
 	shiftOut(s2_data, s2_clock, MSBFIRST, aspects_sr_2);
 	shiftOut(s3_data, s3_clock, MSBFIRST, aspects_sr_3);
-	digitalWrite(s1_latch, LOW);
-	digitalWrite(s2_latch, LOW);
-	digitalWrite(s3_latch, LOW);
+	digitalWrite(s1_latch, HIGH);
+	digitalWrite(s2_latch, HIGH);
+	digitalWrite(s3_latch, HIGH);
 }
 
 

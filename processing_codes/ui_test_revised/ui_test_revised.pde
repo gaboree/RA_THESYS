@@ -26,10 +26,10 @@ int num_serial_ports = 0;
 Serial comPort;
 String received_data_from_acc = null;
 boolean connected_to_acc = false;
-char train_1_state = 'N';
-char train_2_state = 'N';
-char[] track_states = {'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x'};
-char[] signal_aspects ={'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D'};
+char train_1_state = 'S';
+char train_2_state = 'S';
+char[] track_states = {'F', 'F', 'O', 'F', 'F', 'O', 'F', 'F'};
+char[] signal_aspects ={'G', 'Y', 'R', 'G', 'Y', 'R', 'G', 'G'};
 RadioButton r1, r2;
 
 //Font for text
@@ -66,9 +66,10 @@ void setup() {
   //
   cp5 = new ControlP5(this);
   add_train_control_buttons();
-
+  /*
   comPort = new Serial(this, Serial.list()[1], 9600);
   comPort.bufferUntil('\n');
+  */
 }
 
 
