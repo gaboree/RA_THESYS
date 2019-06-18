@@ -15,21 +15,20 @@ float network_size;
 //String track_states = "FFOFFOFF";
 
 //signal components
-PImage signal_def, signal_grn, signal_red, signal_ylw;
+PImage signal_def, signal_grn, signal_red, signal_ylw, acc_disc_msg, acc_con_msg;
 //String signal_aspects = "GYRGYRGG";
 ArrayList<PVector> signal_positions = new ArrayList<PVector>();
 
 //serial communication with ACC and data containers
-String serial_list;
-int serial_list_index = 0;
-int num_serial_ports = 0;
 Serial comPort;
 String received_data_from_acc = null;
 boolean connected_to_acc = false;
 char train_1_state = 'S';
 char train_2_state = 'S';
-char[] track_states = {'F', 'F', 'O', 'F', 'F', 'O', 'F', 'F'};
-char[] signal_aspects ={'G', 'Y', 'R', 'G', 'Y', 'R', 'G', 'G'};
+char[] track_states = {'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
+char[] signal_aspects ={'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
+boolean serial_state;
+
 RadioButton r1, r2;
 
 //Font for text
@@ -54,22 +53,21 @@ void setup() {
   tn_ui_w = rn_ui_w/2;
   network_size = displayWidth *0.38;
   pfont = createFont("Calibri Bold", 32);
-  //preload signal aspects
+  //preload signal aspects and acc connection states
   signal_def=loadImage("signal_default.jpg");
   signal_grn=loadImage("signal_green.jpg");
   signal_red=loadImage("signal_red.jpg");
   signal_ylw=loadImage("signal_yellow.jpg");
+  acc_con_msg = loadImage("acc_connected.png");
+  acc_disc_msg = loadImage("acc_disconected.png");
   //setup signal coodinates
   load_signal_positions();
-
-
-  //
+  //add train control buttons
   cp5 = new ControlP5(this);
   add_train_control_buttons();
-  /*
-  comPort = new Serial(this, Serial.list()[1], 9600);
-  comPort.bufferUntil('\n');
-  */
+  //attempt serial connection
+  attemptSerial();
+  delay(1000);
 }
 
 
@@ -78,10 +76,20 @@ void setup() {
 
 //repeating function
 void draw() {
+  if (serial_state) {
+        // serial is up and running
+        try {
+            // nothing here serial event function handles incomming data...
+        } catch (RuntimeException e) {
+            serial_state = false;
+        }
+    } else {
+        attemptSerial();
+    }
   smooth();
   strokeWeight(4);
   load_default_platform();
-  
+
   //draw the track network with 8 blocks and state
   draw_network(num_blocks);
   //static text for tracks
@@ -97,6 +105,19 @@ void draw() {
 /*
 * Implementation of functions
  */
+void attemptSerial() {
+  try {
+    comPort = new Serial(this, Serial.list()[1], 9600);
+    comPort.bufferUntil('\n');
+    serial_state = true;
+    image(acc_con_msg, start_x, start_y*9.2);
+  }
+  catch(Exception e) {
+    e.printStackTrace();
+    serial_state = false;
+    image(acc_disc_msg, start_x, start_y*9.2);
+  }
+}
 
 void set_train_status_text() {
   if (train_1_state == 'N') {
@@ -147,25 +168,25 @@ void serialEvent(Serial comPort) {
    }
    */
   if (comPort.available()>0) {
-    inString = comPort.readString();
-    train_1_state = inString.charAt(0);
-    train_2_state = inString.charAt(1);
-    track_states[0] = inString.charAt(2);
-    track_states[1] = inString.charAt(3);
-    track_states[2] = inString.charAt(4);
-    track_states[3] = inString.charAt(5);
-    track_states[4] = inString.charAt(6);
-    track_states[5] = inString.charAt(7);
-    track_states[6] = inString.charAt(8);
-    track_states[7] = inString.charAt(9);
-    signal_aspects[0] = inString.charAt(10);
-    signal_aspects[1] = inString.charAt(11);
-    signal_aspects[2] = inString.charAt(12);
-    signal_aspects[3] = inString.charAt(13);
-    signal_aspects[4] = inString.charAt(14);
-    signal_aspects[5] = inString.charAt(15);
-    signal_aspects[6] = inString.charAt(16);
-    signal_aspects[7] = inString.charAt(17);
+    inString = comPort.readStringUntil('\n');
+    //train_1_state = inString.charAt(0);
+    //train_2_state = inString.charAt(1);
+    track_states[0] = inString.charAt(0);
+    track_states[1] = inString.charAt(1);
+    track_states[2] = inString.charAt(2);
+    track_states[3] = inString.charAt(3);
+    track_states[4] = inString.charAt(4);
+    track_states[5] = inString.charAt(5);
+    track_states[6] = inString.charAt(6);
+    track_states[7] = inString.charAt(7);
+    signal_aspects[0] = inString.charAt(8);
+    signal_aspects[1] = inString.charAt(9);
+    signal_aspects[2] = inString.charAt(10);
+    signal_aspects[3] = inString.charAt(11);
+    signal_aspects[4] = inString.charAt(12);
+    signal_aspects[5] = inString.charAt(13);
+    signal_aspects[6] = inString.charAt(14);
+    signal_aspects[7] = inString.charAt(15);
   }
 }
 
@@ -232,7 +253,7 @@ void load_signal_positions() {
 
 
 void set_signal_aspect() {
-  
+
   for (int i = 0; i< signal_aspects.length; i++) {
     switch(signal_aspects[i]) {
     case 'R':
@@ -293,10 +314,9 @@ void load_default_platform() {
   fill(180);
   stroke(80);
   rect(start_x*2.665, start_y, displayWidth*0.24, displayHeight*0.5);
-  fill(0);
+  fill(255);
   textSize(32);
   text("TRAIN 2", start_x*2.95, start_y*1.6);
-  rect(start_x, start_y*9.2, rn_ui_w, rn_ui_h*0.1);
 }
 
 void add_train_control_buttons() {
@@ -349,17 +369,17 @@ public void trainControl1(int val) {
     case(0):
     println("T1 MAX");
     train_1_state = 'M';
-    comPort.write('M');
+    //comPort.write('M');
     break;
     case(1):
     println("T1 MED");
     train_1_state = 'H';
-    comPort.write('H');
+    //comPort.write('H');
     break;
     case(2):
     println("T1 STOP");
     train_1_state = 'S';
-    comPort.write('S');
+    //comPort.write('S');
     break;
   }
   comPort.write(train_1_state+train_2_state);
