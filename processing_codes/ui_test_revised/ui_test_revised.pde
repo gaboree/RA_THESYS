@@ -33,7 +33,7 @@ RadioButton r1, r2;
 
 //Font for text
 PFont pfont = new PFont();
-
+String send_train_speeds;
 
 //setting function
 void settings() {
@@ -369,38 +369,31 @@ public void trainControl1(int val) {
     case(0):
     println("T1 MAX");
     train_1_state = 'M';
-    //comPort.write('M');
     break;
     case(1):
     println("T1 MED");
     train_1_state = 'H';
-    //comPort.write('H');
     break;
     case(2):
-    println("T1 STOP");
     train_1_state = 'S';
-    //comPort.write('S');
     break;
   }
-  comPort.write(train_1_state+train_2_state);
-  println("Sent to ACC: "+train_1_state+train_2_state);
+  send_train_speeds = ""+train_1_state+train_2_state+'\n';
+  comPort.write(send_train_speeds);
 }
 
 public void trainControl2(int val) {
   switch(val) {
     case(0):
-    println("T2 MAX");
     train_2_state = 'M';  
     break;
     case(1):
-    println("T2 MED");
     train_2_state = 'H';
     break;
     case(2):
-    println("T2 STOP");
     train_2_state = 'S';
     break;
   }
-  comPort.write(train_1_state+train_2_state);
-  println("Sent to ACC: "+train_1_state+train_2_state);
+  send_train_speeds = ""+train_1_state+train_2_state+'\n';
+  comPort.write(send_train_speeds);
 }
