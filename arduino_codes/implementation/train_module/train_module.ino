@@ -19,11 +19,10 @@
 
 const uint16_t master_node = 00;	// master node adress
 const uint16_t node_train = 03;		// train control module adress
-RF24 radio(10, 9);					// NRF24L01 (CE,CSN)
+RF24 radio(9, 10);					// NRF24L01 (CE,CSN)
 RF24Network network(radio);			// include this module in the network
 int controlPWMPin = 6;				// PWM pin of arduino to control speed
-int controlTIFPin = 7;
-int controlTIRPin = 8;
+int controlTICPin = 8;
 char previous_speed = 'N';			// default speed mode
 int ack_speed = 0;
 
@@ -33,8 +32,7 @@ void setup() {
   network.begin(90, node_train);
   radio.setDataRate(RF24_2MBPS);
   pinMode(controlPWMPin, OUTPUT);
-  pinMode(controlTIFPin, OUTPUT);
-  pinMode(controlTIRPin, OUTPUT);
+  pinMode(controlTICPin, OUTPUT);
 }
 
 void loop() {
@@ -51,10 +49,9 @@ void loop() {
       }
     }
   }
-  if (ack_speed) {
-    digitalWrite(controlTIFPin, HIGH);
-    digitalWrite(controlTIRPin, HIGH);
-  }
+  if (ack_speed)
+    digitalWrite(controlTICPin, HIGH);
+
 }
 
 /* Received train speed
@@ -82,5 +79,6 @@ int control_train_speed(char data[]) {
     analogWrite(controlPWMPin, 205);
     ack = 1;
   }
+  previous_speed = data[0];
   return ack;
 }

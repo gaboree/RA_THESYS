@@ -21,16 +21,21 @@
 
 // initialize buffer values
 const int data_size = 8;
+const int train_num = 2;
 char ui_package[train_num + (2 * data_size)];
 
 // initialize radio network values
-RF24 radio(10, 9);                  // NRF24L01 (CE,CSN)
+RF24 radio(9, 10);                  // NRF24L01 (CE,CSN)
 RF24Network network(radio);         // include this module in the network
 const uint16_t node_acc = 00;      // master node adress
 const uint16_t node_vacancy = 01;     // vacancy control module adress
 const uint16_t node_signal = 02;    // signal netwrok control adress
 const uint16_t node_train_1 = 03;   // train network control adress
 const uint16_t node_train_2 = 04;
+
+const byte numChars = 3;
+boolean newData = false;
+String speed_serial = "";
 
 /*  Signal data initialization
     The message contains infromation about the 8 signals and their aspectsa
@@ -107,26 +112,42 @@ void loop() {
     }
   }
   //calculate signal aspect sequencing
-  interlocking();
+  //interlocking();
 
   //Read from Serial port incomming train speed from TN-UI
-  String speed_serial = "";
-  if (Serial.available() > 0) {
-    while (Serial.available() > 0) {
-      speed_serial = speed_serial + char( Serial.read());
-    }
-    central_train[0] = speed_serial.charAt(0);
-    central_train[1] = speed_serial.charAt(1);
-  }
-
+  recvWithEndMarker();
   // send new speed data via RFC to TM
-  send_signal_data();
+  //send_signal_data();
   // send new aspect data via RFC to SM
   send_train_data();
+  newData = false;
   //send new data to UI
-  update_data_to_ui();
+  //update_data_to_ui();
   //wait a litle so all data has time to arrive
   delay(10);
+}
+
+void recvWithEndMarker() {
+  static byte ndx = 0;
+  char endMarker = '\n';
+  char rc;
+
+  while (Serial.available() > 0 && newData == false) {
+    rc = Serial.read();
+
+    if (rc != endMarker) {
+      central_train[ndx] = rc;
+      ndx++;
+      if (ndx >= numChars) {
+        ndx = numChars - 1;
+      }
+    }
+    else {
+      central_train[ndx] = '\n'; // terminate the string
+      ndx = 0;
+      newData = true;
+    }
+  }
 }
 
 //load in local buffer vacancy data received from VM network - hardware
