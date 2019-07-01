@@ -11,10 +11,7 @@
 */
 
 #include <RF24Network.h>
-#include <RF24Network_config.h>
-#include <nRF24L01.h>
 #include <RF24.h>
-#include <RF24_config.h>
 #include <SPI.h>
 
 const uint16_t master_node = 00;	// master node adress
@@ -30,28 +27,30 @@ void setup() {
   SPI.begin();
   radio.begin();
   network.begin(90, node_train);
-  radio.setDataRate(RF24_2MBPS);
   pinMode(controlPWMPin, OUTPUT);
   pinMode(controlTICPin, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
+  Serial.println("Loop start");
   network.update();
   //===== Receiving =====//
   while (network.available()) {
+    Serial.println("Network here");
     RF24NetworkHeader master_header;
     char receivedData;
     network.read( master_header, &receivedData, sizeof(receivedData));
     // receiving from central module
     if (master_header.from_node == 00) {
-      if (receivedData !=  previous_speed) {
-        ack_speed = control_train_speed(receivedData);
-      }
+      Serial.println(receivedData);
+      ack_speed = control_train_speed(&receivedData);
+
     }
   }
   if (ack_speed)
     digitalWrite(controlTICPin, HIGH);
-
+  delay(50);
 }
 
 /* Received train speed
@@ -67,16 +66,19 @@ void loop() {
 int control_train_speed(char data[]) {
   // range of PWM interval is from 0 (min) to 255 (max)
   int ack = 0;
+  
+  Serial.println(data[0]);
   if ( data[0] == 'S' ) {
     analogWrite(controlPWMPin, 0);
     ack = 1;
   }
   if ( data[0] == 'H' ) {
-    analogWrite(controlPWMPin, 115);
+    analogWrite(controlPWMPin, 145);
     ack = 1;
   }
   if ( data[0] == 'M' ) {
-    analogWrite(controlPWMPin, 205);
+    Serial.println("most itt");
+    analogWrite(controlPWMPin, 195);
     ack = 1;
   }
   previous_speed = data[0];
