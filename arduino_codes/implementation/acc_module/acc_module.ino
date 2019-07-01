@@ -11,14 +11,10 @@
 */
 
 #include <RF24Network.h>
-#include <RF24Network_config.h>
-#include <Sync.h>
-#include <nRF24L01.h>
-#include <printf.h>
 #include <RF24.h>
-#include <RF24_config.h>
 #include <SPI.h>
 
+0,
 // initialize buffer values
 const int data_size = 8;
 const int train_num = 2;
@@ -93,7 +89,6 @@ void setup() {
   SPI.begin();
   radio.begin();
   network.begin(90, node_acc);
-  radio.setDataRate(RF24_2MBPS);
   //setup Serial Port communication with UI on the control PC, once in loop it is guaranteed that Serial connection is set up, this way no connection is done
   Serial.begin(9600);
 }
