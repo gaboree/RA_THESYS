@@ -21,19 +21,21 @@ ArrayList<PVector> signal_positions = new ArrayList<PVector>();
 
 //serial communication with ACC and data containers
 Serial comPort;
-String received_data_from_acc = null;
+int inData;
+int serialCounter = 0;
+//String received_data_from_acc = null;
 boolean connected_to_acc = false;
 char train_1_state = 'S';
 char train_2_state = 'S';
 char[] track_states = {'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
 char[] signal_aspects ={'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
 boolean serial_state;
-
+int[] serialInArray = new int[16];
 RadioButton r1, r2;
 
 //Font for text
 PFont pfont = new PFont();
-String send_train_speeds;
+char send_train_speeds;
 
 //setting function
 void settings() {
@@ -66,8 +68,8 @@ void setup() {
   cp5 = new ControlP5(this);
   add_train_control_buttons();
   //attempt serial connection
-  attemptSerial();
-  delay(1000);
+  //attemptSerial();
+  comPort = new Serial(this, Serial.list()[0], 19200);
 }
 
 
@@ -76,6 +78,7 @@ void setup() {
 
 //repeating function
 void draw() {
+<<<<<<< HEAD
   if (serial_state) {
     // serial is up and running
 
@@ -88,6 +91,8 @@ void draw() {
   } else {
     attemptSerial();
   }
+=======
+>>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
   smooth();
   strokeWeight(4);
   load_default_platform();
@@ -107,9 +112,11 @@ void draw() {
 /*
 * Implementation of functions
  */
+ 
+ /*
 void attemptSerial() {
   try {
-    comPort = new Serial(this, Serial.list()[1], 9600);
+    comPort = new Serial(this, Serial.list()[0], 9600);
     comPort.bufferUntil('\n');
     serial_state = true;
 
@@ -121,7 +128,7 @@ void attemptSerial() {
     image(acc_disc_msg, start_x, start_y*9.2);
   }
 }
-
+*/
 void set_train_status_text() {
   if (train_1_state == 'N') {
     r1.hide();
@@ -136,6 +143,7 @@ void set_train_status_text() {
 }
 
 void serialEvent(Serial comPort) {
+<<<<<<< HEAD
   String inString;
   if (comPort.available()>0) {
     //while ( comPort.available() > 0) {
@@ -165,9 +173,64 @@ void serialEvent(Serial comPort) {
   for (int i =0; i < 8; i++)
     print(track_states[i]);
   println();
+=======
+  inData = comPort.read();
+  if (serial_state == false) {
+    if ( inData == 'A') {
+      comPort.clear();
+      serial_state = true;
+      comPort.write('A');
+    }
+  } else {
+    serialInArray[serialCounter] = inData;
+    serialCounter++;
+    if (serialCounter > 15) {
+      track_states[0] = (char)serialInArray[0];
+      track_states[1] = (char)serialInArray[1];
+      track_states[2] = (char)serialInArray[2];
+      track_states[3] = (char)serialInArray[3];
+      track_states[4] = (char)serialInArray[4];
+      track_states[5] = (char)serialInArray[5];
+      track_states[6] = (char)serialInArray[6];
+      track_states[7] = (char)serialInArray[7];
+      signal_aspects[0] = (char)serialInArray[8];
+      signal_aspects[1] = (char)serialInArray[9];
+      signal_aspects[2] = (char)serialInArray[10];
+      signal_aspects[3] = (char)serialInArray[11];
+      signal_aspects[4] = (char)serialInArray[12];
+      signal_aspects[5] = (char)serialInArray[13];
+      signal_aspects[6] = (char)serialInArray[14];
+      signal_aspects[7] = (char)serialInArray[15];
+      send_train_speeds = convert_train_input();
+      comPort.write(send_train_speeds);
+      serialCounter = 0;
+    }
+  }
+>>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
 }
 
-
+char convert_train_input() {
+  char ret = 'A';
+  if ( train_1_state == 'S' && train_2_state == 'S')
+    ret = 'B';
+  if ( train_1_state == 'S' && train_2_state == 'H')
+    ret = 'C';
+  if ( train_1_state == 'S' && train_2_state == 'M')
+    ret = 'D';
+  if ( train_1_state == 'H' && train_2_state == 'S')
+    ret = 'E';
+  if ( train_1_state == 'H' && train_2_state == 'H')
+    ret = 'F';
+  if ( train_1_state == 'H' && train_2_state == 'M')
+    ret = 'G';
+  if ( train_1_state == 'M' && train_2_state == 'S')
+    ret = 'H';
+  if ( train_1_state == 'M' && train_2_state == 'H')
+    ret = 'I';
+  if ( train_1_state == 'M' && train_2_state == 'M')
+    ret = 'J';
+  return ret;
+}
 
 void draw_network(int blocks) {
   pushMatrix();
@@ -356,8 +419,6 @@ public void trainControl1(int val) {
     println("T1 STO");
     break;
   }
-  send_train_speeds = ""+train_1_state+train_2_state+'\n';
-  comPort.write(send_train_speeds);
 }
 
 public void trainControl2(int val) {
@@ -372,7 +433,10 @@ public void trainControl2(int val) {
     train_2_state = 'S';
     break;
   }
+<<<<<<< HEAD
 
   send_train_speeds = ""+train_1_state+train_2_state+'\n';
   //comPort.write(send_train_speeds);
+=======
+>>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
 }

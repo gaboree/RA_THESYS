@@ -1,0 +1,249 @@
+\usepackage[utf8x]{inputenc}
+\usepackage[margin=1in,headheight=15.4pt]{geometry}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\usepackage[english,romanian,hungarian]{babel}
+\usepackage{indentfirst}
+
+\usepackage[table,xcdraw,dvipsnames]{xcolor}
+\definecolor{whitesmoke}{rgb}{0.96,0.96,0.96}
+\definecolor{lightblue}{rgb}{0.22,0.45,0.70}
+\definecolor{darkred}{rgb}{0.9,0.0,0.0}
+\definecolor{darkpastelgreen}{rgb}{0.01,0.75,0.24}
+\definecolor{flame}{rgb}{0.89,0.35,0.13}
+\definecolor{mGreen}{rgb}{0,0.6,0}
+\definecolor{mGray}{rgb}{0.5,0.5,0.5}
+\definecolor{mPurple}{rgb}{0.58,0,0.82}
+\definecolor{backgroundColour}{rgb}{0.95,0.95,0.92}
+
+\usepackage[unicode,pdfusetitle,backref=false,pagebackref=true]{hyperref}
+\hypersetup{colorlinks=true,urlcolor=black,citecolor=black,linkcolor=black,pdfborder={0 0 0}}
+\usepackage[all]{hypcap}
+\usepackage{multirow}
+\usepackage{letltxmacro}
+\newcommand{\at}{\makeatletter @\makeatother}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Kód részlet}
+\renewcommand{\lstlistlistingname}{\lstlistingname ek jegyzéke}
+\lstdefinestyle{CStyle}{
+    backgroundcolor=\color{backgroundColour},   
+    commentstyle=\color{mGreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{mGray},
+    stringstyle=\color{mPurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    language=C
+}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{pdfpages}
+\usepackage{capt-of}
+
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{placeins}
+\usepackage[scale=1.25]{ccicons}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{es} = [-triangle 60]
+
+\usepackage{relsize}
+\usepackage{enumitem}
+\setlist[itemize]{itemsep=0pt}
+\setlist[enumerate]{itemsep=0pt}
+
+\setlength{\parskip}{0.25em}
+
+\renewcommand{\arraystretch}{1.25}
+
+\linespread{1.15}
+
+\renewcommand{\UrlFont}{\ttfamily\relsize{-0.5}}
+
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{fontawesome}
+\usepackage{inconsolata}
+\usepackage{minted}
+
+
+\makeatletter
+\def\@cite#1#2{[\textbf{#1\if@tempswa , #2\fi}]}
+\makeatother
+
+\AtBeginDocument{%
+	\LetLtxMacro{\latexref}{\ref}%
+	\def\ref#1{\textbf{\latexref{#1}}}%
+}
+%
+%	Allow two line table headers
+%
+
+
+\newcommand{\specialcell}[2][l]{%
+  \begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
+
+%
+%	Add "Retrieved from" and backlinks stylized by red arrows to the bibliography.
+%
+
+\newcommand{\urlprefix}{Elérhető itt \urlstyle{rm}}
+
+\newcommand{\refspace}{\vspace{-2mm}}
+\newcommand{\redarrow}{\textbf{\textcolor{red}{$\mathbf{\to}$}}}
+
+\makeatletter
+\def\BR@@bibitem#1#2\par{
+	\let\backrefprint\BR@backrefprint
+	\def\@linkcolor{black}
+	\BRorg@bibitem{#1}#2\redarrow \thinspace \BR@backref{#1}
+}
+\makeatother
+
+%
+%	Implement \subsubsubsection.
+%
+
+\usepackage{titlesec}
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\titleformat{\subsubsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\makeatletter
+\def\toclevel@subsubsubsection{4}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+
+\renewcommand\paragraph{\@startsection{paragraph}{6}{\parindent}{3.25ex \@plus1ex \@minus .2ex}{-1em}{\normalfont\normalsize\bfseries}}
+\makeatother
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+%
+%	Implement Hungarian and Romanian section tracking for the English thesis.
+%	\<lang>tableofcontents will print the corresponding one.
+%
+
+\makeatletter
+\newcommand\hungariantableofcontents{
+	\selectlanguage{hungarian}
+	\section*{\contentsname
+		\@mkboth{\MakeUppercase\contentsname}{\MakeUppercase\contentsname}}
+	\@starttoc{2.toc}
+	\selectlanguage{english}
+}
+\makeatother
+
+\newcommand\sectionhu[1]{\addcontentsline{2.toc}{section} {\protect\numberline{\thesection} #1}}
+\newcommand\subsectionhu[1]{\addcontentsline{2.toc}{subsection} {\protect\numberline{\thesubsection} #1}}
+\newcommand\subsubsectionhu[1]{\addcontentsline{2.toc}{subsubsection} {\protect\numberline{\thesubsubsection} #1}}
+\newcommand\subsubsubsectionhu[1]{\addcontentsline{2.toc}{subsubsubsection} {\protect\numberline{\thesubsubsubsection} #1}}
+
+\makeatletter
+\newcommand\romaniantableofcontents{
+	\selectlanguage{romanian}
+	\section*{\contentsname
+		\@mkboth{\MakeUppercase\contentsname}{\MakeUppercase\contentsname}}
+	\@starttoc{1.toc}
+	\selectlanguage{english}
+}
+\makeatother
+
+\newcommand\sectionro[1]{\addcontentsline{1.toc}{section} {\protect\numberline{\thesection} #1}}
+\newcommand\subsectionro[1]{\addcontentsline{1.toc}{subsection} {\protect\numberline{\thesubsection} #1}}
+\newcommand\subsubsectionro[1]{\addcontentsline{1.toc}{subsubsection} {\protect\numberline{\thesubsubsection} #1}}
+\newcommand\subsubsubsectionro[1]{\addcontentsline{1.toc}{subsubsubsection} {\protect\numberline{\thesubsubsubsection} #1}}
+
+%
+%	Support for multiple \listof[figures|tables|listings] between parts of the document.
+%	\clearcontents begins a new list.
+%
+
+\usepackage{xpatch}
+
+\newcounter{lofcntr}
+\newcounter{lotcntr}
+\newcounter{lolcntr}
+
+\NewDocumentCommand{\clearcontents}{}{
+	\stepcounter{lofcntr}
+	\stepcounter{lotcntr}
+	\stepcounter{lolcntr}
+	\setcounter{figure}{0}
+	\setcounter{table}{0}
+	\setcounter{listing}{0}
+}
+
+\makeatletter
+\NewDocumentCommand{\advancecontents}{}{
+	\def\ext@figure{\number\value{lofcntr}.\latex@ext@figure}
+	\def\ext@table{\number\value{lotcntr}.\latex@ext@table}
+	\@namedef{ext@listing}{\number\value{lolcntr}.\latex@ext@listing}
+}
+
+\AtBeginDocument{
+	\let\latex@ext@figure\ext@figure
+	\let\latex@ext@table\ext@table
+	\let\latex@ext@listing\ext@listing
+	\stepcounter{lofcntr}
+	\stepcounter{lotcntr}
+	\stepcounter{lolcntr}
+	\advancecontents
+}
+
+\AtBeginDocument{
+\xpretocmd{\caption}{
+	\advancecontents
+}{}{}
+}
+
+\xpatchcmd{\listoffigures}{%
+	\@starttoc{lof}%
+}{%
+	\@starttoc{\number\value{lofcntr}.lof}%
+}{}{}
+
+\xpatchcmd{\listoftables}{%
+	\@starttoc{lot}%
+}{%
+	\@starttoc{\number\value{lotcntr}.lot}%
+}{}{}
+\makeatother
+
+
+
+% Alter some LaTeX defaults for better treatment of figures:
+%   General parameters, for ALL pages:
+\renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+\renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+%   Parameters for TEXT pages (not float pages):
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}     % 2 may work better
+\setcounter{dbltopnumber}{2}    % for 2-column pages
+\renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+\renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+%   Parameters for FLOAT pages (not text pages):
+\renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+% N.B.: floatpagefraction MUST be less than topfraction !!
+\renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+% remember to use [htp] or [htpb] for placement
