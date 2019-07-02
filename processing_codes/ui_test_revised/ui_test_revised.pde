@@ -77,15 +77,17 @@ void setup() {
 //repeating function
 void draw() {
   if (serial_state) {
-        // serial is up and running
-        try {
-            // nothing here serial event function handles incomming data...
-        } catch (RuntimeException e) {
-            serial_state = false;
-        }
-    } else {
-        attemptSerial();
+    // serial is up and running
+
+    try {
+      // nothing here serial event function handles incomming data...
+    } 
+    catch (RuntimeException e) {
+      serial_state = false;
     }
+  } else {
+    attemptSerial();
+  }
   smooth();
   strokeWeight(4);
   load_default_platform();
@@ -110,6 +112,7 @@ void attemptSerial() {
     comPort = new Serial(this, Serial.list()[1], 9600);
     comPort.bufferUntil('\n');
     serial_state = true;
+
     image(acc_con_msg, start_x, start_y*9.2);
   }
   catch(Exception e) {
@@ -134,60 +137,34 @@ void set_train_status_text() {
 
 void serialEvent(Serial comPort) {
   String inString;
-  /*
-  inString = trim(inString);
-   //println("Serial event handles: "+inString);
-   if (inString != null) {
-   inString = trim(inString);
-   println("buzi 1");
-   println(inString);
-   //handshake with ACC
-   if (connected_to_acc == false) {
-   if (inString.equals("ACC here.")) {
-   println("ACC here0");
-   comPort.clear();
-   connected_to_acc = true;
-   comPort.write("OK");
-   comPort.clear();
-   }
-   } else {
-   received_data_from_acc = inString;
-   println("buzi anzay");
-   println(received_data_from_acc);
-   train_1_state = received_data_from_acc.charAt(0);
-   train_2_state = received_data_from_acc.charAt(1);
-   for (int i = 2; i < 2+num_blocks-1; i++) {
-   track_states[i] = received_data_from_acc.charAt(i);
-   println(track_states[i]);
-   }
-   for (int i = 10; i < 10+num_blocks-1; i++) {
-   signal_aspects[i] = received_data_from_acc.charAt(i);
-   }
-   comPort.clear();
-   }
-   }
-   */
   if (comPort.available()>0) {
-    inString = comPort.readStringUntil('\n');
-    //train_1_state = inString.charAt(0);
-    //train_2_state = inString.charAt(1);
-    track_states[0] = inString.charAt(0);
-    track_states[1] = inString.charAt(1);
-    track_states[2] = inString.charAt(2);
-    track_states[3] = inString.charAt(3);
-    track_states[4] = inString.charAt(4);
-    track_states[5] = inString.charAt(5);
-    track_states[6] = inString.charAt(6);
-    track_states[7] = inString.charAt(7);
-    signal_aspects[0] = inString.charAt(8);
-    signal_aspects[1] = inString.charAt(9);
-    signal_aspects[2] = inString.charAt(10);
-    signal_aspects[3] = inString.charAt(11);
-    signal_aspects[4] = inString.charAt(12);
-    signal_aspects[5] = inString.charAt(13);
-    signal_aspects[6] = inString.charAt(14);
-    signal_aspects[7] = inString.charAt(15);
-  }
+    //while ( comPort.available() > 0) {
+      inString = comPort.readStringUntil('\n');
+      track_states[0] = inString.charAt(0);
+      track_states[1] = inString.charAt(1);
+      track_states[2] = inString.charAt(2);
+      track_states[3] = inString.charAt(3);
+      track_states[4] = inString.charAt(4);
+      track_states[5] = inString.charAt(5);
+      track_states[6] = inString.charAt(6);
+      track_states[7] = inString.charAt(7);
+      signal_aspects[0] = inString.charAt(8);
+      signal_aspects[1] = inString.charAt(9);
+      signal_aspects[2] = inString.charAt(10);
+      signal_aspects[3] = inString.charAt(11);
+      signal_aspects[4] = inString.charAt(12);
+      signal_aspects[5] = inString.charAt(13);
+      signal_aspects[6] = inString.charAt(14);
+      signal_aspects[7] = inString.charAt(15);
+      //comPort.clear();
+      //comPort.stop();
+    //}
+  } 
+  comPort.clear();
+  //
+  for (int i =0; i < 8; i++)
+    print(track_states[i]);
+  println();
 }
 
 
@@ -376,6 +353,7 @@ public void trainControl1(int val) {
     break;
     case(2):
     train_1_state = 'S';
+    println("T1 STO");
     break;
   }
   send_train_speeds = ""+train_1_state+train_2_state+'\n';
@@ -394,6 +372,7 @@ public void trainControl2(int val) {
     train_2_state = 'S';
     break;
   }
+
   send_train_speeds = ""+train_1_state+train_2_state+'\n';
-  comPort.write(send_train_speeds);
+  //comPort.write(send_train_speeds);
 }

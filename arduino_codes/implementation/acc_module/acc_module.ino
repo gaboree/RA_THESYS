@@ -14,11 +14,10 @@
 #include <RF24.h>
 #include <SPI.h>
 
-0,
 // initialize buffer values
 const int data_size = 8;
 const int train_num = 2;
-char ui_package[train_num + (2 * data_size)];
+char ui_package[2 * data_size];
 
 // initialize radio network values
 RF24 radio(9, 10);                  // NRF24L01 (CE,CSN)
@@ -51,7 +50,7 @@ String speed_serial = "";
               signal 7 has aspect GREEN
               signal 8 has aspect RED
 */
-char central_signal[data_size] = "DDDDDDDD";
+char central_signal[data_size] = "RRRRRRRR";
 
 /*  Vacancy data initialization
     The message contains infromation about the 8 vacancy elements and their state
@@ -81,7 +80,7 @@ char central_vacancy[data_size] = "FFFFFFFF";
                      H - HALF (train on track and moves with half speed)
                      M - MAX (train on track and moves with max speed)
 */
-char central_train[train_num] = "MN";
+char central_train[train_num] = "HN";
 
 //setup run at startup once
 void setup() {
@@ -101,9 +100,12 @@ void loop() {
     RF24NetworkHeader master_header;
     char receivedData[data_size];
     network.read( master_header, &receivedData, sizeof(receivedData));
+
     //receiving and load into local buffer information from vacancy module
     if (master_header.from_node == node_vacancy) {
-      process_vacancy_data(receivedData);
+      for ( int i = 0; i < sizeof(receivedData); i++) {
+        central_vacancy[i] = receivedData[i];
+      }
     }
   }
   //calculate signal aspect sequencing
@@ -117,9 +119,10 @@ void loop() {
   send_train_data();
   newData = false;
   //send new data to UI
-  //update_data_to_ui();
+  update_data_to_ui();
   //wait a litle so all data has time to arrive
-  delay(10);
+  delay(500);
+  
 }
 
 void recvWithEndMarker() {
@@ -141,23 +144,24 @@ void recvWithEndMarker() {
       central_train[ndx] = '\n'; // terminate the string
       ndx = 0;
       newData = true;
+      
     }
   }
 }
 
 //load in local buffer vacancy data received from VM network - hardware
 void process_vacancy_data(char data[]) {
+  //Serial.println(sizeof(data));
   for ( int i = 0; i < sizeof(data); i++) {
     central_vacancy[i] = data[i];
+    //Serial.print(central_vacancy[i]);
   }
+  //Serial.println();
 }
 
 //send processed interlocking data to UI
 void update_data_to_ui() {
   String package_to_send;
-  for (int i = 0; i < train_num; i++) {
-    package_to_send = package_to_send + central_train[i];
-  }
   for (int i = 0; i < data_size; i++) {
     package_to_send = package_to_send + central_vacancy[i];
   }
@@ -267,6 +271,7 @@ void send_signal_data() {
 //send received data from UI to control train module
 void send_train_data() {
   char speed_t1 = central_train[0];
+
   RF24NetworkHeader headert1(node_train_1);
   bool ok_t1 = network.write(headert1, &speed_t1, sizeof(speed_t1));
-}
+  }

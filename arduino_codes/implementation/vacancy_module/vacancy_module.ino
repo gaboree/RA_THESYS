@@ -16,7 +16,7 @@
 const int stateOut[] = {8, 7, 6, 5, 4, 3, 2, 1};
 const int photoIn[] = {A0, A1, A2, A3, A4, A5, A6, A7};
 const int block_num = 8;
-char local_vacancy[block_num] = "FFFFFFFF";
+char local_vacancy[] = {'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', };
 int stateArray[] = {0, 0, 0, 0, 0, 0, 0, 0};
 bool first = false;
 
@@ -47,37 +47,11 @@ void loop() {
     inputState[i] = analogRead(photoIn[i]);
   }
   // set state leds and vacancy package data
-  /*
-    for ( int i = 0; i < block_num; i++) {
-    int end_pos = 0;
-    if ( (i - 1) < 0)
-      end_pos = (i - 1) % block_num + block_num;
-    if (inputState[i] >= 300 && local_vacancy[i] == 'F') {
-      digitalWrite(stateOut[i], HIGH);
-      Serial.println(i);
-      local_vacancy[i] = 'O';
-      if ( (i - 1) < 0) {
-        if (local_vacancy[end_pos] == 'O') {
-          digitalWrite(stateOut[end_pos], LOW);
-          local_vacancy[end_pos] = 'F';
-        }
-      } else {
-        if (local_vacancy[i - 1] == 'O') {
-          digitalWrite(stateOut[i - 1], LOW);
-          local_vacancy[i - 1] = 'F';
-        }
-      }
-    }
-
-    }
-
-    `*/
-
   int end_pos = 0;
   for ( int i = 0; i < block_num; i++) {
     if ( i - 1 < 0)
       end_pos = (i - 1) % block_num + block_num;
-    if ((inputState[i % block_num] > 300) && local_vacancy[i % block_num] == 'F') {
+    if ((inputState[i % block_num] > 200) && local_vacancy[i % block_num] == 'F') {
       digitalWrite(stateOut[i % block_num], HIGH);
       local_vacancy[i % block_num] = 'O';
       if ( i - 1 < 0) {
@@ -96,8 +70,6 @@ void loop() {
 
   //send vacancy data to ACC
   send_train_data();
-  delay(10);
-
 }
 
 
