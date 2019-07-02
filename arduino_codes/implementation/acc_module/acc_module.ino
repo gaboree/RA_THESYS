@@ -14,7 +14,6 @@
 #include <RF24.h>
 #include <SPI.h>
 
-0,
 // initialize buffer values
 const int data_size = 8;
 const int train_num = 2;
@@ -28,7 +27,7 @@ const uint16_t node_vacancy = 01;     // vacancy control module adress
 const uint16_t node_signal = 02;    // signal netwrok control adress
 const uint16_t node_train_1 = 03;   // train network control adress
 const uint16_t node_train_2 = 04;
-
+int fromUI = 0;
 const byte numChars = 3;
 boolean newData = false;
 String speed_serial = "";
@@ -51,7 +50,7 @@ String speed_serial = "";
               signal 7 has aspect GREEN
               signal 8 has aspect RED
 */
-char central_signal[data_size] = "DDDDDDDD";
+char central_signal[data_size] = "RRRRRRRR";
 
 /*  Vacancy data initialization
     The message contains infromation about the 8 vacancy elements and their state
@@ -70,7 +69,7 @@ char central_signal[data_size] = "DDDDDDDD";
               block 7 is FREE
               block 8 is FREE
 */
-char central_vacancy[data_size] = "FFFFFFFF";
+char central_vacancy[data_size] = "FFFOOFFF";
 
 /* Train data initialization
    The messeage contains data about the trains present in the network and their speed aspect
@@ -81,7 +80,7 @@ char central_vacancy[data_size] = "FFFFFFFF";
                      H - HALF (train on track and moves with half speed)
                      M - MAX (train on track and moves with max speed)
 */
-char central_train[train_num] = "MN";
+char central_train[train_num] = "NN";
 
 //setup run at startup once
 void setup() {
@@ -90,7 +89,8 @@ void setup() {
   radio.begin();
   network.begin(90, node_acc);
   //setup Serial Port communication with UI on the control PC, once in loop it is guaranteed that Serial connection is set up, this way no connection is done
-  Serial.begin(9600);
+  Serial.begin(19200);
+  establishContact();
 }
 
 void loop() {
@@ -103,52 +103,86 @@ void loop() {
     network.read( master_header, &receivedData, sizeof(receivedData));
     //receiving and load into local buffer information from vacancy module
     if (master_header.from_node == node_vacancy) {
-      process_vacancy_data(receivedData);
+      for (int i = 0; i < sizeof(receivedData); i++)
+        central_vacancy[i] = receivedData[i];
     }
   }
   //calculate signal aspect sequencing
-  //interlocking();
+  interlocking();
 
-  //Read from Serial port incomming train speed from TN-UI
-  recvWithEndMarker();
-  // send new speed data via RFC to TM
-  //send_signal_data();
-  // send new aspect data via RFC to SM
+  //Read from Serial port incomming train speed from TN-UI and send update to ui
+  recvSerial();
+  // send new speed data via RFC to SM
+  send_signal_data();
+  // send new aspect data via RFC to TM
   send_train_data();
-  newData = false;
-  //send new data to UI
-  //update_data_to_ui();
   //wait a litle so all data has time to arrive
   delay(10);
 }
 
-void recvWithEndMarker() {
-  static byte ndx = 0;
-  char endMarker = '\n';
-  char rc;
+void establishContact() {
+  while (Serial.available() <= 0) {
+    Serial.print('A');   // send a capital A
+    delay(300);
+  }
+}
 
-  while (Serial.available() > 0 && newData == false) {
-    rc = Serial.read();
-
-    if (rc != endMarker) {
-      central_train[ndx] = rc;
-      ndx++;
-      if (ndx >= numChars) {
-        ndx = numChars - 1;
-      }
-    }
-    else {
-      central_train[ndx] = '\n'; // terminate the string
-      ndx = 0;
-      newData = true;
-    }
+void recvSerial() {
+  if (Serial.available() > 0) {
+    fromUI = Serial.read();
+    //handle cases for fromUI
+    convert_speed_to_char(fromUI);
+    for (int i = 0; i < data_size; i++)
+      Serial.write(central_vacancy[i]);
+    for (int i = 0; i < data_size; i++)
+      Serial.write(central_signal[i]);
   }
 }
 
 //load in local buffer vacancy data received from VM network - hardware
-void process_vacancy_data(char data[]) {
-  for ( int i = 0; i < sizeof(data); i++) {
-    central_vacancy[i] = data[i];
+void convert_speed_to_char(char data) {
+  switch (data) {
+    case 'B':
+      central_train[0] = 'S';
+      central_train[1] = 'S';
+
+      break;
+    case 'C':
+      central_train[0] = 'S';
+      central_train[1] = 'H';
+      break;
+    case 'D':
+      central_train[0] = 'S';
+      central_train[1] = 'M';
+      break;
+    case 'E':
+      central_train[0] = 'H';
+      central_train[1] = 'S';
+      break;
+    case 'F':
+      central_train[0] = 'H';
+      central_train[1] = 'H';
+      break;
+    case 'G':
+      central_train[0] = 'H';
+      central_train[1] = 'M';
+      break;
+    case 'H':
+      central_train[0] = 'M';
+      central_train[1] = 'S';
+      break;
+    case 'I':
+      central_train[0] = 'M';
+      central_train[1] = 'H';
+      break;
+    case 'J':
+      central_train[0] = 'M';
+      central_train[1] = 'M';
+      break;
+    default:
+      central_train[0] = 'S';
+      central_train[1] = 'S';
+      break;
   }
 }
 
