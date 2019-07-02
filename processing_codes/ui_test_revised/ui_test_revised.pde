@@ -78,25 +78,9 @@ void setup() {
 
 //repeating function
 void draw() {
-<<<<<<< HEAD
-  if (serial_state) {
-    // serial is up and running
-
-    try {
-      // nothing here serial event function handles incomming data...
-    } 
-    catch (RuntimeException e) {
-      serial_state = false;
-    }
-  } else {
-    attemptSerial();
-  }
-=======
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
   smooth();
   strokeWeight(4);
   load_default_platform();
-
   //draw the track network with 8 blocks and state
   draw_network(num_blocks);
   //static text for tracks
@@ -143,37 +127,6 @@ void set_train_status_text() {
 }
 
 void serialEvent(Serial comPort) {
-<<<<<<< HEAD
-  String inString;
-  if (comPort.available()>0) {
-    //while ( comPort.available() > 0) {
-      inString = comPort.readStringUntil('\n');
-      track_states[0] = inString.charAt(0);
-      track_states[1] = inString.charAt(1);
-      track_states[2] = inString.charAt(2);
-      track_states[3] = inString.charAt(3);
-      track_states[4] = inString.charAt(4);
-      track_states[5] = inString.charAt(5);
-      track_states[6] = inString.charAt(6);
-      track_states[7] = inString.charAt(7);
-      signal_aspects[0] = inString.charAt(8);
-      signal_aspects[1] = inString.charAt(9);
-      signal_aspects[2] = inString.charAt(10);
-      signal_aspects[3] = inString.charAt(11);
-      signal_aspects[4] = inString.charAt(12);
-      signal_aspects[5] = inString.charAt(13);
-      signal_aspects[6] = inString.charAt(14);
-      signal_aspects[7] = inString.charAt(15);
-      //comPort.clear();
-      //comPort.stop();
-    //}
-  } 
-  comPort.clear();
-  //
-  for (int i =0; i < 8; i++)
-    print(track_states[i]);
-  println();
-=======
   inData = comPort.read();
   if (serial_state == false) {
     if ( inData == 'A') {
@@ -206,7 +159,6 @@ void serialEvent(Serial comPort) {
       serialCounter = 0;
     }
   }
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
 }
 
 char convert_train_input() {
@@ -433,10 +385,4 @@ public void trainControl2(int val) {
     train_2_state = 'S';
     break;
   }
-<<<<<<< HEAD
-
-  send_train_speeds = ""+train_1_state+train_2_state+'\n';
-  //comPort.write(send_train_speeds);
-=======
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
 }

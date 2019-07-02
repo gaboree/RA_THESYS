@@ -80,11 +80,8 @@ char central_vacancy[data_size] = "FFFOOFFF";
                      H - HALF (train on track and moves with half speed)
                      M - MAX (train on track and moves with max speed)
 */
-<<<<<<< HEAD
-char central_train[train_num] = "HN";
-=======
+
 char central_train[train_num] = "NN";
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
 
 //setup run at startup once
 void setup() {
@@ -108,14 +105,8 @@ void loop() {
 
     //receiving and load into local buffer information from vacancy module
     if (master_header.from_node == node_vacancy) {
-<<<<<<< HEAD
-      for ( int i = 0; i < sizeof(receivedData); i++) {
-        central_vacancy[i] = receivedData[i];
-      }
-=======
       for (int i = 0; i < sizeof(receivedData); i++)
         central_vacancy[i] = receivedData[i];
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
     }
   }
   //calculate signal aspect sequencing
@@ -127,12 +118,6 @@ void loop() {
   send_signal_data();
   // send new aspect data via RFC to TM
   send_train_data();
-<<<<<<< HEAD
-  newData = false;
-  //send new data to UI
-  update_data_to_ui();
-=======
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
   //wait a litle so all data has time to arrive
   delay(500);
   
@@ -145,21 +130,7 @@ void establishContact() {
   }
 }
 
-<<<<<<< HEAD
-    if (rc != endMarker) {
-      central_train[ndx] = rc;
-      ndx++;
-      if (ndx >= numChars) {
-        ndx = numChars - 1;
-      }
-    }
-    else {
-      central_train[ndx] = '\n'; // terminate the string
-      ndx = 0;
-      newData = true;
-      
-    }
-=======
+
 void recvSerial() {
   if (Serial.available() > 0) {
     fromUI = Serial.read();
@@ -169,18 +140,9 @@ void recvSerial() {
       Serial.write(central_vacancy[i]);
     for (int i = 0; i < data_size; i++)
       Serial.write(central_signal[i]);
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
   }
 }
 
-//load in local buffer vacancy data received from VM network - hardware
-<<<<<<< HEAD
-void process_vacancy_data(char data[]) {
-  //Serial.println(sizeof(data));
-  for ( int i = 0; i < sizeof(data); i++) {
-    central_vacancy[i] = data[i];
-    //Serial.print(central_vacancy[i]);
-=======
 void convert_speed_to_char(char data) {
   switch (data) {
     case 'B':
@@ -224,7 +186,6 @@ void convert_speed_to_char(char data) {
       central_train[0] = 'S';
       central_train[1] = 'S';
       break;
->>>>>>> fbe5225a636005d1c136ac508fc4fba8a4a5546b
   }
   //Serial.println();
 }
