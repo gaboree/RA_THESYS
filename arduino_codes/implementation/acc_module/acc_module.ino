@@ -69,7 +69,7 @@ char central_signal[data_size] = "RRRRRRRR";
               block 7 is FREE
               block 8 is FREE
 */
-char central_vacancy[data_size] = "FFFOOFFF";
+char central_vacancy[data_size] = "FFFFFFFF";
 
 /* Train data initialization
    The messeage contains data about the trains present in the network and their speed aspect
@@ -119,7 +119,7 @@ void loop() {
   // send new aspect data via RFC to TM
   send_train_data();
   //wait a litle so all data has time to arrive
-  delay(500);
+  delay(10);
   
 }
 
@@ -187,19 +187,6 @@ void convert_speed_to_char(char data) {
       central_train[1] = 'S';
       break;
   }
-  //Serial.println();
-}
-
-//send processed interlocking data to UI
-void update_data_to_ui() {
-  String package_to_send;
-  for (int i = 0; i < data_size; i++) {
-    package_to_send = package_to_send + central_vacancy[i];
-  }
-  for (int i = 0; i < data_size; i++) {
-    package_to_send = package_to_send + central_signal[i];
-  }
-  Serial.println(package_to_send);
 }
 
 //interlocking caluclations based on received data

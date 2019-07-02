@@ -1,4 +1,3 @@
-
 import controlP5.*;
 import processing.serial.*;
 
@@ -69,7 +68,7 @@ void setup() {
   add_train_control_buttons();
   //attempt serial connection
   //attemptSerial();
-  comPort = new Serial(this, Serial.list()[0], 19200);
+  comPort = new Serial(this, Serial.list()[1], 19200);
 }
 
 
@@ -97,22 +96,6 @@ void draw() {
 * Implementation of functions
  */
  
- /*
-void attemptSerial() {
-  try {
-    comPort = new Serial(this, Serial.list()[0], 9600);
-    comPort.bufferUntil('\n');
-    serial_state = true;
-
-    image(acc_con_msg, start_x, start_y*9.2);
-  }
-  catch(Exception e) {
-    e.printStackTrace();
-    serial_state = false;
-    image(acc_disc_msg, start_x, start_y*9.2);
-  }
-}
-*/
 void set_train_status_text() {
   if (train_1_state == 'N') {
     r1.hide();
@@ -157,6 +140,7 @@ void serialEvent(Serial comPort) {
       send_train_speeds = convert_train_input();
       comPort.write(send_train_speeds);
       serialCounter = 0;
+      println(track_states[0]);
     }
   }
 }
